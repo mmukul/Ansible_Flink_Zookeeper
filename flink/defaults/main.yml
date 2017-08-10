@@ -1,0 +1,57 @@
+---
+
+#--------------
+# Apache Flink
+#--------------
+
+flink_version: 1.3.2
+flink_hadoop_version: hadoop27
+scala_version: 2.10
+flink_download_timeout_seconds: 600
+flink_install_parent_dir: /opt
+flink_dir: '{{flink_install_parent_dir}}/flink'
+role_path: multimaster_flink/roles/flink
+
+#---------------
+# Zookeeper
+#---------------
+zookeeper_version: 3.4.10
+zookeeper_url: http://www.us.apache.org/dist/zookeeper/zookeeper-{{zookeeper_version}}/zookeeper-{{zookeeper_version}}.tar.gz
+client_port: 2181
+init_limit: 5
+sync_limit: 2
+tick_time: 2000
+zookeeper_autopurge_purgeInterval: 0
+zookeeper_autopurge_snapRetainCount: 10
+data_dir: /var/lib/zookeeper
+log_dir: /var/log/zookeeper
+zookeeper_dir: /opt/zookeeper-{{zookeeper_version}}
+zookeeper_conf_dir: "{{zookeeper_dir}}"
+zookeeper_tarball_dir: /opt
+
+#---------------------------------
+# Rolling file appender setttings
+#---------------------------------
+
+zookeeper_rolling_log_file_max_size: 10MB
+zookeeper_max_rolling_log_file_count: 10
+
+#---------------------------------------------------------------------
+# List of dict (i.e. {zookeeper_hosts:[{host:,id:},{host:,id:},...]})
+#---------------------------------------------------------------------
+zookeeper_hosts:
+  - host: "{{inventory_hostname}}" # the machine running
+    id: 1
+
+# Dict of ENV settings to be written into the (optional) conf/zookeeper-env.sh
+zookeeper_env: {}
+
+# Controls Zookeeper myid generation
+zookeeper_force_myid: yes
+
+#---------
+# Hadoop
+#---------
+hadoop_version: 2.8.1
+hadoop_url: http://www-us.apache.org/dist/hadoop/common/hadoop-{{ hadoop_version }}/hadoop-{{ hadoop_version }}.tar.gz
+hadoop_dir: /opt

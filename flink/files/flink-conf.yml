@@ -1,0 +1,56 @@
+
+jobmanager.rpc.address: jobmanager1
+
+# The RPC port where the JobManager is reachable.
+
+jobmanager.rpc.port: 6123
+
+
+# The heap size for the JobManager JVM
+
+jobmanager.heap.mb: 1024
+
+
+# The heap size for the TaskManager JVM
+
+taskmanager.heap.mb: 1024
+
+
+# The number of task slots that each TaskManager offers. Each slot runs one parallel pipeline.
+
+taskmanager.numberOfTaskSlots: 1
+
+# Specify whether TaskManager memory should be allocated when starting up (true) or when
+# memory is required in the memory manager (false)
+# Important Note: For pure streaming setups, we highly recommend to set this value to `false`
+# as the default state backends currently do not use the managed memory.
+
+taskmanager.memory.preallocate: false
+
+# The parallelism used for programs that did not specify and other parallelism.
+
+parallelism.default: 1
+
+#==============================================================================
+# Web Frontend
+#==============================================================================
+
+# The address under which the web-based runtime monitor listens.
+#
+jobmanager.web.address: jobmanager1
+
+# The port under which the web-based runtime monitor listens.
+# A value of -1 deactivates the web server.
+
+jobmanager.web.port: 8081
+
+
+#==============================================================================
+# High availability mode and ZooKeeper quorum with 2 JobManagers
+#==============================================================================
+
+high-availability: zookeeper
+high-availability.zookeeper.quorum: localhost:2181
+high-availability.zookeeper.path.root: /flink
+high-availability.zookeeper.path.namespace: /cluster_one       # important: customize per cluster
+high-availability.zookeeper.storageDir: hdfs:///flink/recovery

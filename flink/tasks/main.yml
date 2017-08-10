@@ -1,0 +1,97 @@
+---
+
+#-------------------------
+#Flink Install & Configure
+#-------------------------
+
+- name: download flink
+  become: yes
+  become_user: root
+  get_url: url=http://www-us.apache.org/dist/flink/flink-1.3.2/flink-1.3.2-bin-hadoop27-scala_2.10.tgz dest={{ flink_install_parent_dir }}
+  
+- name: untar flink
+  become: yes
+  become_user: root
+  unarchive: src={{ flink_install_parent_dir }}/flink-1.3.2-bin-hadoop27-scala_2.10.tgz dest={{ flink_install_parent_dir  }} copy=no
+  
+- name: Copy config Flink
+  become: yes
+  become_user: root
+  copy: src=flink-conf.yml dest={{ flink_install_parent_dir }}/flink-{{ flink_version }}/conf/flink-conf.yml
+  
+- name: Copy master config
+  become: yes
+  become_user: root
+  copy: src={{ role_path }}/files/masters dest={{ flink_install_parent_dir }}/flink-{{ flink_version }}/conf/masters
+
+- name: Copy slaves config
+  become: yes
+  become_user: root
+  copy: src={{ role_path }}/files/slaves dest={{ flink_install_parent_dir }}/flink-{{ flink_version }}/conf/slaves
+    
+- name: Run Flink
+  become: yes
+  become_user: root
+  shell: daemon {{ flink_install_parent_dir }}/flink-{{ flink_version }}/bin/start-cluster.sh
+  
+#-----------------------------
+#Zookeeper Install & Configure
+#-----------------------------
+  
+- name: Download zookeeper
+  become: yes
+  become_user: root
+  get_url: url={{zookeeper_url}} dest={{zookeeper_tarball_dir}}/zookeeper-{{zookeeper_version}}.tar.gz
+
+- name: Untar zookeeper
+  become: yes
+  become_user: root
+  command: tar xf {{zookeeper_tarball_dir}}/zookeeper-{{zookeeper_version}}.tar.gz --strip-components=1 chdir={{zookeeper_dir}} creates={{zookeeper_dir}}/bin
+
+- group: name=zookeeper system=yes
+- user: name=zookeeper group=zookeeper system=yes
+
+- name: Change ownership on zookeeper directory.
+  become: yes
+  become_user: root
+  file: path={{zookeeper_dir}} state=directory owner=zookeeper group=zookeeper
+
+- name: "Create zookeeper {{item}} directory."
+  become: yes
+  become_user: root
+  file: path={{item}} state=directory owner=zookeeper group=zookeeper
+  with_items:
+    - "{{data_dir}}"
+    - "{{log_dir}}"
+
+- name: Configure zookeeper zoo.cfg
+  become: yes
+  become_user: root
+  template: src=zoo.cfg.j2 dest={{ zookeeper_dir }}/conf/zoo.cfg owner=zookeeper group=zookeeper
+  notify:
+    - Restart zookeeper
+
+- name: Start ZooKeeper quorum
+  become: yes
+  become_user: root
+  command: sudo sh {{zookeeper_dir}}/bin/start-zookeeper-quorum.sh
+  
+- name: Start an HA-cluster
+  become: yes
+  become_user: root
+  command: sudo sh {{zookeeper_dir}}/bin/start-cluster.sh
+
+- name: Create Directory
+  become: yes
+  become_user: root
+  file: path={{ hadoop_dir }}/hadoop state=directory recurse=yes
+
+- name: Download hadoop
+  become: yes
+  become_user: root
+  get_url: url={{ hadoop_url }} dest={{ hadoop_dir }}/hadoop
+
+- name: Untar Hadoop
+  become: yes
+  become_user: root
+  unarchive: src={{ hadoop_dir }}/hadoop/hadoop-{{ hadoop_version }}.tar.gz dest={{ hadoop_dir }}/hadoop copy=no
