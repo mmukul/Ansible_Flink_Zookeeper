@@ -1,2 +1,1 @@
-jobmanager1:8081
-jobmanager2:8082
+localhost:8081
