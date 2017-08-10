@@ -1,1 +1,1 @@
-localhost:8081
+jobmanager1:8081
