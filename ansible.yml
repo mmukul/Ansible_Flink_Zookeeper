@@ -1,4 +1,3 @@
----
 - hosts: all
   remote_user: centos
   become: true
@@ -14,28 +13,28 @@
       - 96.118.243.143
 
     tasks:
-  - name: Download flink
-    become: true
-    get_url: url={{flink_url}} dest={{flink_archive}}
+     - name: Download flink
+       become: true
+       get_url: url={{flink_url}} dest={{flink_archive}}
 
-  - name: Extr flink
-    become: true
-    unarchive: src={{flink_archive}} dest=/usr/local copy=no
+     - name: Extr flink
+       become: true
+       unarchive: src={{flink_archive}} dest=/usr/local copy=no
 
-  - name: Link flink
-    become: true
-    file: src={{flink_path}} dest={{flink_link}} state=link
+     - name: Link flink
+       become: true
+       file: src={{flink_path}} dest={{flink_link}} state=link
 
-  - name: Chown flink
-    become: true
-    file: path={{flink_path}} owner=centos recurse=yes
+     - name: Chown flink
+       become: true
+       file: path={{flink_path}} owner=centos recurse=yes
 
-  - name: Setup flink master
-    lineinfile: "dest={{flink_link}}/conf/flink-conf.yaml regexp='^jobmanager.rpc.address.*' line='jobmanager.rpc.address: {{master_ips}}'"
+     - name: Setup flink master
+       lineinfile: "dest={{flink_link}}/conf/flink-conf.yaml regexp='^jobmanager.rpc.address.*' line='jobmanager.rpc.address: {{master_ips}}'"
 
-  - name: Setup flink slaves
-    lineinfile: dest="{{flink_link}}/conf/slaves" line={{item}}
-    with_items: "{{slave_ip}}"
+     - name: Setup flink slaves
+       lineinfile: dest="{{flink_link}}/conf/slaves" line={{item}}
+       with_items: "{{slave_ip}}"
 
-  - name: Start Flink Cluster
-    command: "{{flink_link}}/bin/start-cluster.sh"
+     - name: Start Flink Cluster
+       command: "{{flink_link}}/bin/start-cluster.sh"
