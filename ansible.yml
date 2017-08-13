@@ -7,10 +7,10 @@
     flink_path: /usr/local/flink-1.3.2
     flink_link: /usr/local/flink
     master_ips: 
-      - 96.118.245.235
-      - 96.118.240.75
+      - ipaddress1
+      - ipaddress2
     slave_ip:
-      - 96.118.243.143
+      - ipaddress3
 
   tasks:
      - name: Download flink
